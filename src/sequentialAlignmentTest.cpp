@@ -1,9 +1,18 @@
 /**
+   
  Created by Gavin Golden on 4/16/15.
  Copyright (c) 2015 Gavin Golden. All rights reserved.
  
- A simple program to test the efficiency of aligned and unaligned 
+ A simple program to test the efficiency of sequential (un)aligned word
  array access patterns.
+
+ A series of tests has shown that runtime does not differ even with non-word
+ aligned memory access.
+
+ I believe this is due to block CPU caching that effectively negates any
+ "advantages" that aligned access presents because cache misses will occur
+ at the same rate for all offsets but on different iterations of the loop.
+ 
 */
 
 #include <iostream>
@@ -37,6 +46,8 @@ void initData() {
 int main(int argc, const char * argv[]) {
     srand(1);
 
+    /** Repeat the summation loop on a smallish vector rather than
+        creating an enormous vector */
     const unsigned REPS = (argc == 2 ? atoi(argv[1]) : 10000);
     /** Cannot offset by a size greater than the num bytes in #ValType. */
     const int MAX_OFFSET = std::min(DESIRED_OFFSET, (int)sizeof(typeid(ValType)));
@@ -51,7 +62,7 @@ int main(int argc, const char * argv[]) {
     for (int offset = 0; (offset < MAX_OFFSET); offset++)
     {
         ValType* curr = reinterpret_cast<ValType*>(reinterpret_cast<char*>(data.data()) + offset);
-        std::cout << "----- Start address: " << curr << " -----" << std::endl;
+        std::cout << "Start address for offset [" << offset << "]: " << curr << " -----" << std::endl;
         
         GUtil::Timer timer;
         timer.start();
@@ -69,7 +80,7 @@ int main(int argc, const char * argv[]) {
         }
         
         timer.end();
-        std::cout << "Timings for offset [" << offset << "] --> " << timer << std::endl;
+        std::cout << "Time --> " << timer << "\n\n";
     }
     std::cout << "Sum : " << sum << std::endl;
     return 0;
