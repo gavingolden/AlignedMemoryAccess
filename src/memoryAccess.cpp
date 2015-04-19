@@ -19,10 +19,10 @@
 #include <algorithm>
 #include <typeinfo>
 #include <vector>
-#include "GTimer.h"
+#include "gTimer.h"
 
 
-#define ARR_SIZE 100000
+#define ARR_SIZE 10000
 #define DESIRED_OFFSET 4
 
 /** Data type to be used for the test. */
@@ -90,7 +90,7 @@ int main(int argc, const char * argv[]) {
                 #ifdef RANDOM
                 sum += *(curr + randIndices[i]);
                 #else
-                sum += ((*curr) % (rep + 1) == 0 ? 1 : 0);
+                sum += (*curr);
                 curr++;
                 #endif
             }

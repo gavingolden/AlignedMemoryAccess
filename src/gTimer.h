@@ -9,23 +9,34 @@
 
 namespace GUtil {
 
+  /** A simple timer class for tracking system and user time
+	  of the entire calling process.
+  */
   class Timer {
   public:
 	Timer() { isTiming = false; }
-	
+
+	/** Call to mark the beginning of a time measurement.
+		Can't be called if timer has already been started.
+	 */
 	void start() {
 	  if (isTiming) { throw std::runtime_error("Timer is already started!"); }
-	  getrusage(RUSAGE_SELF, &startProfile);
+	  getrusage(RUSAGE_SELF, (rusage*)&startProfile);
 	  isTiming = true;
 	}
-	
+
+	/** Call to mark the end of a time measurement.
+		Can't be called if the timer was never started.
+	*/
 	void end() {
 	  if (!isTiming) { throw std::runtime_error("Timer was not running!"); }
-	  getrusage(RUSAGE_SELF, &endProfile);
+	  getrusage(RUSAGE_SELF,(rusage*)&endProfile);
 	  isTiming = false;
 	}
 
-	
+	/** Print the most recent time measurement if it is finished.
+		Else, notify that it is still running.
+	*/
 	friend std::ostream& operator<<(std::ostream& os, Timer& timer) {
 	  if (timer.isTiming) {
 		os << "TIMER RUNNING";
@@ -41,7 +52,7 @@ namespace GUtil {
 	}
 
   private:
-	
+	/** Internal convenience method for printing to output. */
 	void printTime(std::ostream& os) {
 	  float microConversion = 1000000.0f;
 	  
@@ -56,9 +67,14 @@ namespace GUtil {
 	  // Zero out timeval structs
 	  startUser = endUser = startSys = endSys = (struct timeval){0, 0};
 	}
-	
+
+	/** Hold beginning and end time state information. */
 	struct rusage startProfile, endProfile;
+	
+	/** Hold information extracted from #startProfile and #endProfile */
 	struct timeval startUser, endUser, startSys, endSys;
+
+	/** Track state of timer to notify user if misusing. */
 	bool isTiming;
   };
   
