@@ -1,18 +1,17 @@
 /**
-
- Created by Gavin Golden on 4/16/15.
- Copyright (c) 2015 Gavin Golden. All rights reserved.
-
- A simple program to test the efficiency of sequential (un)aligned word
- array access patterns.
-
- A series of tests has shown that runtime does not differ even with non-word
- aligned memory access.
-
- I believe this is due to block CPU caching that effectively negates any
- "advantages" that aligned access presents because cache misses will occur
- at the same rate for all offsets but on different iterations of the loop.
-
+   Copyright (c) 2015 Gavin Golden gavinegolden@gmail.com.
+   All rights reserved.
+   
+   A simple program to test the efficiency of sequential (un)aligned word
+   array access patterns.
+   
+   A series of tests has shown that runtime does not differ for sequential
+   memory access with non-word alignment.
+   
+   I believe this is due to block caching that effectively negates any
+   "advantages" that aligned access presents because cache misses will occur
+   at the same rate for all offsets but on slightly different iterations
+   of the loop.
 */
 
 #include <iostream>

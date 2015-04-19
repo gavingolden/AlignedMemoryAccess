@@ -1,6 +1,11 @@
 #ifndef __GTIMER_H__
 #define __GTIMER_H__
 
+/**
+   Copyright (c) 2015 Gavin Golden gavinegolden@gmail.com.
+   All rights reserved.
+*/
+
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <stdexcept>
