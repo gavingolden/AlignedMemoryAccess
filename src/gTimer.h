@@ -37,6 +37,18 @@ namespace GUtil {
 	  if (!isTiming) { throw std::runtime_error("Timer was not running!"); }
 	  getrusage(RUSAGE_SELF,(rusage*)&endProfile);
 	  isTiming = false;
+
+	  timeval startUser = startProfile.ru_utime;
+	  timeval startSys = startProfile.ru_stime;
+	  timeval endUser = endProfile.ru_utime;
+	  timeval endSys = endProfile.ru_stime;
+
+	  static const float microToMillis = 1000000.0f;
+	  
+ 	  uSec = endUser.tv_sec - startUser.tv_sec;
+	  uMillis = (endUser.tv_usec - startUser.tv_usec) / microToMillis;
+	  sSec = endSys.tv_sec - startSys.tv_sec;
+	  sMillis = (endSys.tv_usec - startSys.tv_usec) / microToMillis;
 	}
 
 	/** Print the most recent time measurement if it is finished.
@@ -47,37 +59,22 @@ namespace GUtil {
 		os << "TIMER RUNNING";
 		return os;
 	  }
-	  timer.startUser = timer.startProfile.ru_utime;
-	  timer.startSys = timer.startProfile.ru_stime;
-	  timer.endUser = timer.endProfile.ru_utime;
-	  timer.endSys = timer.endProfile.ru_stime;
 
-	  timer.printTime(os);
+	  os << std::setprecision(4) << std::fixed
+		 << "User: " << (static_cast<float>(timer.uSec) + timer.uMillis) << " sec\t"
+		 << "System: " << (static_cast<float>(timer.sSec) + timer.sMillis) << " sec";
+	  
 	  return os;
 	}
 
+	
   private:
-	/** Internal convenience method for printing to output. */
-	void printTime(std::ostream& os) {
-	  float microConversion = 1000000.0f;
-	  
-	  long int uSec = endUser.tv_sec - startUser.tv_sec;
-	  float uMillis = (endUser.tv_usec - startUser.tv_usec) / microConversion;
-	  long int sSec = endSys.tv_sec - startSys.tv_sec;
-	  float sMillis = (endSys.tv_usec - startSys.tv_usec) / microConversion;
-
-	  os << std::setprecision(4) << std::fixed
-		 << "User: " << (static_cast<float>(uSec) + uMillis) << " sec\t"
-		 << "System: " << (static_cast<float>(sSec) + sMillis) << " sec";
-	  // Zero out timeval structs
-	  startUser = endUser = startSys = endSys = (struct timeval){0, 0};
-	}
-
 	/** Hold beginning and end time state information. */
 	struct rusage startProfile, endProfile;
 	
-	/** Hold information extracted from #startProfile and #endProfile */
-	struct timeval startUser, endUser, startSys, endSys;
+	/** Timings extracted from #startProfile and #endProfile */
+	long int uSec, sSec;
+	float uMillis, sMillis;
 
 	/** Track state of timer to notify user if misusing. */
 	bool isTiming;
