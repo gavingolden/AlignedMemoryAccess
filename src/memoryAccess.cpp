@@ -14,6 +14,7 @@
    of the loop.
 */
 
+
 #include <iostream>
 #include <algorithm>
 #include <typeinfo>
@@ -76,7 +77,7 @@ int main(int argc, const char * argv[]) {
     for (int offset = 0; (offset < MAX_OFFSET); offset++) 
     {
         ValType* curr = reinterpret_cast<ValType*>(reinterpret_cast<char*>(data.data()) + offset);
-        std::cout << "Start address for offset [" << offset << "]: " << curr << " -----" << std::endl;
+        std::cout << "Start address for offset [" << offset << "]: " << curr << std::endl;
 
         GUtil::Timer timer;
         timer.start();
@@ -89,6 +90,13 @@ int main(int argc, const char * argv[]) {
                 #ifdef RANDOM
                 sum += *(curr + randIndices[i]);
                 #else
+                // Uncomment to prevent wonky -O3 optimization segfault
+                /*
+                if (curr > &(*(data.end()--))) {
+                    std::cerr << "Invalid address." << std::endl;
+                    return 1;
+                }
+                */
                 sum += (*curr);
                 curr++;
                 #endif
